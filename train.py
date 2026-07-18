@@ -1,35 +1,24 @@
+import argparse
 import os
+import random
+
+import numpy as np
+import tifffile as tf
+from PIL import Image
+from tqdm import tqdm
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-from torchvision import models
-from PIL import Image
+from torchvision import models, transforms
 
+import kornia.losses as losses
+from pytorch_msssim import ms_ssim, MS_SSIM
+from skimage import io, img_as_float
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
-from ran2D_upsamp import RCAN2D
-
-
-import random
-import kornia.losses as losses
-import numpy as np
-from skimage import io, img_as_float
-
-
-import tifffile as tf
-from tqdm import tqdm
-
-
-from pytorch_msssim import ms_ssim, MS_SSIM
-
-import argparse
-import os
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader
+from RCAN2D import RCAN2D
 
 
 class PairedTransform:
