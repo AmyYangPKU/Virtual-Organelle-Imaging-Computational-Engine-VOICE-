@@ -33,7 +33,7 @@ Open the plugin from:
 Plugins > VOICE_app > VOICE_app
 ```
 
-## Install From Downloaded Code
+## Install From Downloaded Code (recommended)
 
 Use this method if you downloaded the repository as a ZIP file or cloned it to
 your computer.
