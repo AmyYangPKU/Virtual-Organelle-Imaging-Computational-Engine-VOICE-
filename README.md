@@ -43,7 +43,7 @@ First create and activate a Python 3.10 conda environment:
 ```bash
 conda create -n voice_app python=3.10 -y
 conda activate voice_app
-
+```
 
 Then enter the downloaded project folder:
 
@@ -55,6 +55,7 @@ cd /path/to/VOICE_app
 Install the plugin:
 
 ```bash
+python -m pip install -r requirements.txt
 python -m pip install .
 ```
 
