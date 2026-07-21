@@ -1,0 +1,2 @@
+[napari.manifest]
+VOICE_app = voice_app:napari.yaml

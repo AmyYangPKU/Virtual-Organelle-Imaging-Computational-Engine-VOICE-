@@ -1,0 +1,6 @@
+magicgui
+napari
+numpy
+qtpy
+scipy
+tifffile

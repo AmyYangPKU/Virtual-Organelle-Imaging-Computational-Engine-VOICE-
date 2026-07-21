@@ -1,0 +1,10 @@
+name: VOICE_app
+display_name: VOICE_app
+contributions:
+  commands:
+    - id: VOICE_app.make_widget
+      title: VOICE_app
+      python_name: voice_app._widget:VoiceAppWidget
+  widgets:
+    - command: VOICE_app.make_widget
+      display_name: VOICE_app
