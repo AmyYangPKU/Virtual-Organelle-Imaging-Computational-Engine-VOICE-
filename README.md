@@ -38,7 +38,15 @@ Plugins > VOICE_app > VOICE_app
 Use this method if you downloaded the repository as a ZIP file or cloned it to
 your computer.
 
-First enter the downloaded project folder:
+First create and activate a Python 3.10 conda environment:
+
+```bash
+conda create -n voice_app python=3.10 -y
+conda activate voice_app
+
+
+Then enter the downloaded project folder:
+
 
 ```bash
 cd /path/to/VOICE_app
