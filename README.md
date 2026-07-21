@@ -2,26 +2,7 @@
 
 VOICE_app is a napari plugin for synthetic organelle LR/SR dataset generation.
 
-This repository is a public installable plugin package. The UI/plugin shell is
-included as Python source, while these core algorithm modules are distributed as
-compiled CPython bytecode only:
-
-- `generate_mt.pyc`
-- `generate_mito.pyc`
-- `generate_ccp.pyc`
-- `generate_npc.pyc`
-- `generate_er.pyc`
-- `resolution_tools.pyc`
-
-No `.py` source files for those six modules are included.
-
-The OMM profile data is embedded inside the compiled `generate_mito.pyc`
-module, so no separate `.mat` data files are exposed in the repository.
-The compiled `resolution_tools.pyc` module includes the OMM 3D PSF helper
-ported from `AutoPSF3D`.
-OMM image generation uses a 3D volume blur for GT/SR, fits `sigma_xy` in the
-`[0.5, 2.0]` range with `sigma_z = 1.2 + rand * 0.8`, then creates LR by
-downsampling GT/SR before applying the fitted 2D `generate_psf` lambda.
+This repository is a public installable plugin package. VOICE_app can generate virtual datasets for five types of organelles: microtubules, outer mitochondrial membranes (OMM), clathrin-coated pits (CCPs), nuclear pore complexes (NPCs), and the endoplasmic reticulum (ER).
 
 ## Compatibility
 
@@ -31,7 +12,7 @@ compiled with Python 3.10. Use a Python 3.10 napari environment.
 ## Install From GitHub
 
 ```bash
-python -m pip install git+https://github.com/YOUR_GITHUB_NAME/VOICE_app.git
+python -m pip install git+https://github.com/AmyYangPKU/Virtual-Organelle-Imaging-Computational-Engine-VOICE-.git
 ```
 
 Then start napari:
