@@ -1,7 +1,0 @@
-include README.md
-recursive-include src/voice_app *.py
-include src/voice_app/*.pyc
-recursive-include src/voice_app napari.yaml
-global-exclude ._*
-global-exclude .DS_Store
-global-exclude __pycache__
