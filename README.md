@@ -9,6 +9,8 @@ the endoplasmic reticulum (ER).
 
 ## Introduction Video
 
+https://github.com/user-attachments/assets/97986bfe-9ed9-4dca-96a5-591f01adfaad
+
 
 
 ## Project Components
