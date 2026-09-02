@@ -153,64 +153,6 @@ def train_one_epoch(model, dataloader, criterion, optimizer, device):
     return avg_loss, avg_ms_ssim
 
 
-def validate(model, dataloader, criterion, device):
-    model.eval()
-    total_loss = 0.0
-    total_ms_ssim = 0.0
-    num_images = 0
-    total_psnr = 0.0
-
-    progress_bar = tqdm(dataloader, desc="Validating", ncols=80)
-
-    with torch.no_grad():
-        for lq, gt in progress_bar:
-
-            lq, gt = lq.to(device), gt.to(device)
-
-
-            output = model(lq)
-
-
-            B = output.size(0)
-
-            for b in range(B):
-                out_b = output[b:b+1]
-                out_b[out_b < 0] = 0
-                gt_b  = gt[b:b+1]
-
-
-                loss_b = criterion(out_b, gt_b)
-                total_loss += loss_b.item()
-
-
-                out_n = (out_b - out_b.min()) / (out_b.max() - out_b.min()+1e-8)
-                gt_n  = (gt_b  - gt_b.min())  / (gt_b.max()  - gt_b.min()+1e-8)
-
-
-                ms_val = ms_ssim(out_n, gt_n, data_range=1, size_average=True)
-
-                out_np = out_n.squeeze().cpu().numpy()
-                gt_np = gt_n.squeeze().cpu().numpy()
-                psnr_val = psnr(gt_np, out_np, data_range=1.0)
-                total_psnr += psnr_val
-
-
-                total_ms_ssim += ms_val.item()
-
-                num_images += 1
-
-            progress_bar.set_postfix({
-                "val_loss": f"{total_loss / num_images:.6f}",
-                "val_psnr": f"{total_psnr / num_images:.2f}",
-                "val_ms_ssim": f"{total_ms_ssim / num_images:.4f}"
-            })
-
-    avg_loss = total_loss / num_images
-    avg_psnr = total_psnr / num_images
-    avg_ms_ssim = total_ms_ssim / num_images
-
-    return avg_loss, avg_psnr, avg_ms_ssim
-
 def validate_val(model, dataloader, criterion, device):
     model.eval()
     total_loss = 0.0
@@ -349,7 +291,7 @@ def main():
     lr_rate = 2e-4
     num_epochs = args.epochs
 
-    scale_factor = 1
+    scale_factor = 2
 
 
     train_dataset = SRDataset(lq_train, gt_train)
@@ -362,10 +304,10 @@ def main():
     if has_test:
         test_dataset = SRDataset(lq_test, gt_test)
         test_loader  = DataLoader(test_dataset, batch_size=1, shuffle=False)
-        print(">>> Test dataset detected. Will run validation on TEST.")
+        print(">>> Test dataset detected. SR images will be exported when validation MS-SSIM improves.")
     else:
         test_loader = None
-        print(">>> No test dataset found. Skipping TEST validation.")
+        print(">>> No test dataset found. Skipping TEST inference.")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = RCAN2D(input_channels=1, output_channels=1, scale=scale_factor).to(device)
@@ -403,7 +345,7 @@ def main():
         f.write(f"Epochs: {num_epochs}\n")
         f.write(f"Augmentation: Hflip/Vflip/Rot90\n")
         f.write("=====================================\n\n")
-        f.write("epoch,train_ms_ssim,val_ms_ssim,val_psnr,val_loss,test_ms_ssim,test_psnr,test_loss\n")
+        f.write("epoch,train_ms_ssim,val_ms_ssim,val_psnr,val_loss\n")
 
 
     best_val_loss = float("inf")
@@ -416,22 +358,12 @@ def main():
         val_loss,   val_psnr, val_ms_ssim   = validate_val(model, val_loader, criterion, device)
 
 
-        if test_loader is not None:
-            test_loss, test_psnr, test_ms_ssim = validate(model, test_loader, criterion, device)
-            print(f"Epoch [{epoch + 1}/{num_epochs}]  "
-                  f"Train Loss: {train_loss:.6f}  Train MS-SSIM: {train_ms_ssim:.6f}  "
-                  f"Val Loss: {val_loss:.6f}  Val PSNR: {val_psnr:.6f}  Val MS-SSIM: {val_ms_ssim:.6f}  "
-                  f"Test Loss: {test_loss:.6f}  Test PSNR: {test_psnr:.6f} Test MS-SSIM: {test_ms_ssim:.6f}")
-            with open(log_path, "a") as f:
-                f.write(f"{epoch + 1},{train_ms_ssim:.6f},{val_ms_ssim:.6f},{val_psnr:.6f},{val_loss:.6f},{test_ms_ssim:.6f},{test_psnr:.6f},{test_loss:.6f}\n")
+        print(f"Epoch [{epoch + 1}/{num_epochs}]  "
+              f"Train Loss: {train_loss:.6f}  Train MS-SSIM: {train_ms_ssim:.6f}  "
+              f"Val Loss: {val_loss:.6f}  Val PSNR: {val_psnr:.6f}  Val MS-SSIM: {val_ms_ssim:.6f}")
 
-        else:
-            print(f"Epoch [{epoch + 1}/{num_epochs}]  "
-                  f"Train Loss: {train_loss:.6f}  Train MS-SSIM: {train_ms_ssim:.6f}  "
-                  f"Val Loss: {val_loss:.6f}  Val PSNR: {val_psnr:.6f}  Val MS-SSIM: {val_ms_ssim:.6f}")
-
-            with open(log_path, "a") as f:
-                f.write(f"{epoch + 1},{train_ms_ssim:.6f},{val_ms_ssim:.6f},{val_psnr:.6f},{val_loss:.6f}\n")
+        with open(log_path, "a") as f:
+            f.write(f"{epoch + 1},{train_ms_ssim:.6f},{val_ms_ssim:.6f},{val_psnr:.6f},{val_loss:.6f}\n")
 
 
         torch.save(model.state_dict(), os.path.join(save_dir, f"rcan_epoch{epoch + 1}.pth"))
