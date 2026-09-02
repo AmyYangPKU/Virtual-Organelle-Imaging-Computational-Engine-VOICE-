@@ -7,10 +7,21 @@ virtual datasets for five types of organelles: microtubules, outer mitochondrial
 membranes (OMM), clathrin-coated pits (CCPs), nuclear pore complexes (NPCs), and
 the endoplasmic reticulum (ER).
 
-## Compatibility
+## Project Components
 
-This package currently targets CPython 3.10 because the bundled `.pyc` files were
-compiled with Python 3.10. Use a Python 3.10 napari environment.
+In addition to `VOICE_app`, this project contains two modules:
+
+- [`SRTrain`](./SRTrain/) trains a 2D RCAN model for restoring paired
+  low-resolution and high-resolution fluorescence microscopy images. See the
+  [SRTrain README](./SRTrain/README.md) for data preparation and training
+  instructions.
+- [`SRSegFusion`](./SRSegFusion/) for joint super-resolution and
+  segmentation training. See the
+  [SRSegFusion README](./SRSegFusion/Readme.md) for training and inference
+  details.
+
+Together, these folders cover synthetic dataset generation, super-resolution
+model training, and joint restoration-segmentation workflows.
 
 ## Install From GitHub
 
